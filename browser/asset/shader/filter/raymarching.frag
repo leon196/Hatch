@@ -36,7 +36,7 @@ float map (vec3 pos) {
   float dist = length(pos);
   float spicy = fbm(seed);
   float r = 1.0;// + spicy * .2;
-  const float count = 4.0;
+  const float count = 6.0;
   for (float index = count; index > 0.0; --index)
   {
     float w = .8*r;
@@ -63,38 +63,49 @@ vec3 getNormal (vec3 pos) {
   return normalize(vec3(map(pos+e.xyy)-map(pos-e.xyy), map(pos+e.yxy)-map(pos-e.yxy), map(pos+e.yyx)-map(pos-e.yyx)));
 }
 
-void main () {
-  vec2 uv = (gl_FragCoord.xy-0.5*resolution.xy)/resolution.y;
-  vec3 eye = cameraPos;
-  vec3 at = cameraTarget;
-  vec3 ray = look(eye, at, uv);
-  vec3 pos = eye;
-  float dither = random(uv);//+fract(time));
-  float total = 0.0;//dither * 2.;
-  float shade = 0.0;
+vec4 raymarch (vec3 eye, vec3 ray) {
+  float dither = random(ray.xy);//+fract(time));
+	vec4 result = vec4(eye, 0);
+	float total = 0.0;
   float maxt = 20.0;
-  const float count = 60.;
+  const float count = 40.;
   for (float index = count; index > 0.0; --index) {
-    pos = eye + ray * total;
-    float dist = map(pos);
+    result.xyz = eye + ray * total;
+    float dist = map(result.xyz);
     if (dist < 0.001 + total * .002 || total > maxt) {
-      shade = index / count;
+      result.w = index / count;
       break;
     }
     dist *= 0.5 + 0.1 * dither;
     total += dist;
   }
-  vec3 normal = getNormal(pos);
-  vec3 color = vec3(1);
+  result.w *= step(total, maxt);
+	return result;
+}
 
+void main () {
+  vec2 uv = (gl_FragCoord.xy-0.5*resolution.xy)/resolution.y;
+  vec3 eye = cameraPos;
+  vec3 at = cameraTarget;
+  vec3 ray = look(eye, at, uv);
+  vec3 eyeoffset = 0.02*normalize(cross(normalize(at-eye), vec3(0,1,0)));
+
+  vec4 resultLeft = raymarch(eye-eyeoffset, ray);
+  vec4 resultRight = raymarch(eye+eyeoffset, ray);
+
+  vec3 color = vec3(0);
+  color.r += resultLeft.w;
+  color.gb += resultRight.w;
+
+  // vec3 normal = getNormal(resultLeft);
   // color += vec3(0.752, 0.949, 0.831) * pow(clamp(dot(normal, normalize(vec3(0,-3,1))), 0.0, 1.0), 4.);
   // color += vec3(0.921, 0.905, 0.658) * pow(clamp(dot(normal, normalize(vec3(-1,3,3))), 0.0, 1.0), 4.);
   // color += vec3(0.972, 0.556, 0.329) * clamp(dot(ray, normalize(pos))*.5+.5, 0.0, 1.0);
 
-  color *= pow(shade, 1.0/4.5);
-  color *= step(total, maxt);
+  // color *= pow(shade, 1.0/4.5);
+  // color *= step(length(eye-resultLeft.xyz), maxt);
 
   gl_FragColor = texture2D(framebuffer, gl_FragCoord.xy/resolution)*.9 + .1*vec4(color, 1);
   // gl_FragColor.rgb = color;
-  gl_FragColor.w = total;// * step(0.001, length(color));
+  // gl_FragColor.w = total;// * step(0.001, length(color));
 }
