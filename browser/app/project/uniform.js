@@ -11,18 +11,16 @@ var deltas = {};
 var params = [];
 
 export var uniformsToUpdate = [];
-export var uniforms = 
-    {
-			time: { value: 0 },
-			timeLoop: { value: 0 },
-			resolution: { value: [window.innerWidth, window.innerHeight] },
-			mouse: { value: [window.innerWidth/2, window.innerHeight/2] },
-			cameraPos: { value: [0,0,0] },
-			cameraTarget: { value: [0,0,0] },
-			frame: { value: 0 }, 
-			blur: { value: 0 }, 
-			bloom: { value: 0 }, 
-		};
+export var uniforms = {
+	time: { value: 0 },
+	resolution: { value: [window.innerWidth, window.innerHeight] },
+	mouse: { value: [window.innerWidth/2, window.innerHeight/2] },
+	cameraPos: { value: [0,0,0] },
+	cameraTarget: { value: [0,0,0] },
+	framebuffer: { value: 0 }, 
+	blur: { value: 0 }, 
+	bloom: { value: 0 }, 
+};
 
 export function initUniforms () {
 	keys = Object.keys(assets.animations.actions);
@@ -45,7 +43,6 @@ export function initUniforms () {
 export function updateUniforms (elapsed) {
 	var dt = Math.max(0.01, Math.min(1., elapsed - uniforms.time.value));
 	uniforms.time.value = elapsed;
-	uniforms.timeLoop.value = engine.timeLoop;
 	uniforms.cameraPos.value = engine.camera.position;
 	uniforms.cameraTarget.value = engine.controls.target;
 	uniforms.mouse.value[0] = Mouse.x;
@@ -65,7 +62,6 @@ export function updateUniforms (elapsed) {
 		}
 	})
 	uniformsToUpdate.forEach(item => item.time.value = elapsed);
-	uniformsToUpdate.forEach(item => item.timeLoop.value = engine.timeLoop);
 }
 
 export function resizeUniforms (width, height) {

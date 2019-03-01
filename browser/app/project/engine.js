@@ -2,49 +2,50 @@
 import * as THREE from 'three.js';
 import { OrbitControls } from '../libs/OrbitControls';
 import renderer from '../engine/renderer';
+import FrameBuffer from '../engine/framebuffer';
 import assets from '../engine/assets';
 import Bloom from '../libs/bloom/bloom';
 import { uniforms } from './uniform';
 import { clamp, lerp, lerpArray, lerpVector, lerpArray2, lerpVectorArray, saturate } from '../engine/misc';
 
 export var engine = {
-	scene: new THREE.Scene(),
-	camera: new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.01, 2000),
+	camera: new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 2000),
 	target: new THREE.Vector3(),
+	scene: null,
 	controls: null,
-	framerender: null,
-	frametarget: new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight),
+	framebuffer: null,
 	bloom: null,
-	timeLoop: 0,
 }
 
 export function initEngine () {
 
-	engine.camera.position.x = 5;
-	engine.camera.position.y = 5;
-	engine.camera.position.z = 5;
+	engine.camera.position.x = -1;
+	engine.camera.position.y = 1;
+	engine.camera.position.z = 3;
 
 	engine.controls = new OrbitControls(engine.camera, renderer.domElement);
 	engine.controls.enableDamping = true;
 	engine.controls.dampingFactor = 0.1;
 	engine.controls.rotateSpeed = 0.1;
-	engine.controls.target.y = 3;
 
-	engine.framerender = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), assets.shaders.render);
-	engine.framerender.frustumCulled = false;
+	assets.shaders.raymarching.uniforms = uniforms;
+	assets.shaders.render.uniforms = uniforms;
 
-	engine.bloom = new Bloom(engine.frametarget.texture);
+	engine.scene = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), assets.shaders.render);
+	engine.scene.frustumCulled = false;
+
+	engine.framebuffer = new FrameBuffer({
+		material: assets.shaders.raymarching
+	});
+
+	// engine.bloom = new Bloom(engine.frametarget.texture);
 }
-
-var vector = new THREE.Vector3();
-var array = [0,0,0];
-var arrayCamera = [0,0,0];
-var arrayFOV = [0,0,0];
-var arrayTarget = [0,0,0];
-var arraySun = [0,0,0];
 
 export function updateEngine (elapsed) {
 	engine.controls.update();
+
+	engine.framebuffer.update();
+	uniforms.framebuffer.value = engine.framebuffer.getTexture();
 	
 	// array = assets.animations.getPosition('camera', elapsed);
 	// arrayCamera = lerpArray(arrayCamera, array, .1);
