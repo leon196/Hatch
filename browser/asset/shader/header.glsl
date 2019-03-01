@@ -26,7 +26,7 @@ vec3 look (vec3 eye, vec3 target, vec2 anchor) {
     vec3 forward = normalize(target-eye);
     vec3 right = normalize(cross(forward, vec3(0,1,0)));
     vec3 up = normalize(cross(right, forward));
-    return normalize(forward + right * anchor.x + up * anchor.y);
+    return normalize(forward * .5 + right * anchor.x + up * anchor.y);
 }
 float sdCapsule( vec3 p, vec3 a, vec3 b, float r ) {
     vec3 pa = p - a, ba = b - a;

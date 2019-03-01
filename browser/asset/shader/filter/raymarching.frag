@@ -35,21 +35,25 @@ float map (vec3 pos) {
   vec3 seed = pos;
   float dist = length(pos);
   float spicy = fbm(seed);
-  float r = 1.0 + spicy * .2;
-  const float count = 7.0;
+  float r = 1.0;// + spicy * .2;
+  const float count = 4.0;
   for (float index = count; index > 0.0; --index)
   {
-    float w = .4*r;
-    float b = 0.8*r;
-    p.xz *= rot(.4/r);
-    p.yz *= rot(1./r);
+    float w = .8*r;
+    float b = 0.4*r;
+    p.xz *= rot(.5/r);
+    p.yz *= rot(2./r);
     p = abs(p)-w;
-    float wave = 0.5 + 0.5 * sin(time + p.z * 4. / r);
-    float s = (.01+wave*.1)*r;
+    // float wave = 0.5 + 0.5 * sin(time + p.z * 4. / r);
+    float s = 0.002;//(.01+wave*.1)*r;
     // p = abs(p)-w/2.;
     scene = smoothmin(scene, length(p.xy)-s, b);
     r /= 2.0;
   }
+
+  // pos = repeat(pos, 2.5);
+
+  // scene = min(scene, box(pos, vec3(0.5)));
 
   return scene;
 }
@@ -62,15 +66,14 @@ vec3 getNormal (vec3 pos) {
 void main () {
   vec2 uv = (gl_FragCoord.xy-0.5*resolution.xy)/resolution.y;
   vec3 eye = cameraPos;
-  // eye.xz *= rot(time * .1);
   vec3 at = cameraTarget;
   vec3 ray = look(eye, at, uv);
   vec3 pos = eye;
-  float dither = random(uv+fract(time));
-  float total = dither * 2.;
+  float dither = random(uv);//+fract(time));
+  float total = 0.0;//dither * 2.;
   float shade = 0.0;
-  float maxt = 10.0;
-  const float count = 40.;
+  float maxt = 20.0;
+  const float count = 60.;
   for (float index = count; index > 0.0; --index) {
     pos = eye + ray * total;
     float dist = map(pos);
@@ -82,16 +85,16 @@ void main () {
     total += dist;
   }
   vec3 normal = getNormal(pos);
-  // normal.xz *= rot(-time * .1);
-  vec3 color = vec3(0);
+  vec3 color = vec3(1);
 
-  color += vec3(0.752, 0.949, 0.831) * pow(clamp(dot(normal, normalize(vec3(0,-3,1))), 0.0, 1.0), 4.);
-  color += vec3(0.921, 0.905, 0.658) * pow(clamp(dot(normal, normalize(vec3(-1,3,3))), 0.0, 1.0), 4.);
-  color += vec3(0.972, 0.556, 0.329) * clamp(dot(ray, normalize(pos))*.5+.5, 0.0, 1.0);
+  // color += vec3(0.752, 0.949, 0.831) * pow(clamp(dot(normal, normalize(vec3(0,-3,1))), 0.0, 1.0), 4.);
+  // color += vec3(0.921, 0.905, 0.658) * pow(clamp(dot(normal, normalize(vec3(-1,3,3))), 0.0, 1.0), 4.);
+  // color += vec3(0.972, 0.556, 0.329) * clamp(dot(ray, normalize(pos))*.5+.5, 0.0, 1.0);
 
   color *= pow(shade, 1.0/4.5);
   color *= step(total, maxt);
 
-  gl_FragColor = texture2D(framebuffer, gl_FragCoord.xy/resolution)*.9 +.1*vec4(color, 1);
-  // gl_FragColor = vec4(color, 1);
+  gl_FragColor = texture2D(framebuffer, gl_FragCoord.xy/resolution)*.9 + .1*vec4(color, 1);
+  // gl_FragColor.rgb = color;
+  gl_FragColor.w = total;// * step(0.001, length(color));
 }
