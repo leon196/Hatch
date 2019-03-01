@@ -1,0 +1,52 @@
+{
+  "name": "cookie-invitro-2017",
+  "version": "1.0.0",
+  "description": "Invitro for Cookie demoparty 2017",
+  "scripts": {
+    "assets": "node scripts/assets.js",
+    "build": "node scripts/build.js",
+    "start": "concurrently --kill-others \"http-server browser\" \"chokidar-socket-emitter -p browser\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leon196/CookieInvitro2017.git"
+  },
+  "bugs": {
+    "url": "https://github.com/leon196/CookieInvitro2017/issues"
+  },
+  "homepage": "https://github.com/leon196/CookieInvitro2017",
+  "dependencies": {
+    "jspm": "^0.16.53"
+  },
+  "devDependencies": {
+    "chokidar-socket-emitter": "^0.6.0",
+    "concurrently": "^3.5.0",
+    "http-server": "^0.10.0",
+    "quickly-copy-file": "^1.0.0",
+    "rimraf-promise": "^2.0.0"
+  },
+  "peerDependencies": {
+    "eslint": "^4.7.2"
+  },
+  "jspm": {
+    "directories": {
+      "baseURL": "browser"
+    },
+    "dependencies": {
+      "blender-html5-animations": "github:KoltesDigital/blender-html5-animations@master",
+      "css": "github:systemjs/plugin-css@^0.1.36",
+      "dat.gui": "github:dataarts/dat.gui@^0.6.5",
+      "gl-matrix": "github:toji/gl-matrix@^2.4.0",
+      "json": "github:systemjs/plugin-json@^0.3.0",
+      "socket.io-client": "github:socketio/socket.io-client@^2.0.3",
+      "text": "github:systemjs/plugin-text@^0.0.11",
+      "three.js": "github:mrdoob/three.js@master",
+      "vanruesc/postprocessing": "github:vanruesc/postprocessing@^3.1.0"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4"
+    }
+  }
+}
