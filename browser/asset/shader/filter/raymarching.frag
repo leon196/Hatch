@@ -31,21 +31,22 @@ float fbm (vec3 p) {
 
 float map (vec3 pos) {
   float scene = 10.0;
-  vec3 p = pos;
-  vec3 seed = pos;
   float dist = length(pos);
+  // pos.xz *= rot(dist);
+  vec3 seed = pos;
+  vec3 p = pos;
   float spicy = fbm(seed);
-  float r = 1.0;// + spicy * .2;
-  const float count = 6.0;
+  float r = 1.0 + spicy * .1;
+  const float count = 5.0;
   for (float index = count; index > 0.0; --index)
   {
-    float w = .8*r;
-    float b = 0.4*r;
-    p.xz *= rot(.5/r);
-    p.yz *= rot(2./r);
+    float w = 0.6*r;
+    float b = 0.6*r;
+    p.xz *= rot(.5/r);// + time * 0.1);
+    p.yz *= rot(2./r);// + time * 0.05);
     p = abs(p)-w;
     // float wave = 0.5 + 0.5 * sin(time + p.z * 4. / r);
-    float s = 0.002;//(.01+wave*.1)*r;
+    float s = 0.001;//(.01+wave*.1)*r;
     // p = abs(p)-w/2.;
     scene = smoothmin(scene, length(p.xy)-s, b);
     r /= 2.0;
@@ -64,11 +65,11 @@ vec3 getNormal (vec3 pos) {
 }
 
 vec4 raymarch (vec3 eye, vec3 ray) {
-  float dither = random(ray.xy);//+fract(time));
+  float dither = random(ray.xy+fract(time));
 	vec4 result = vec4(eye, 0);
 	float total = 0.0;
   float maxt = 20.0;
-  const float count = 40.;
+  const float count = 50.;
   for (float index = count; index > 0.0; --index) {
     result.xyz = eye + ray * total;
     float dist = map(result.xyz);
