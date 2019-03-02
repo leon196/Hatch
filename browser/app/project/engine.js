@@ -87,7 +87,7 @@ export function initEngine () {
 			engine.camera.updateProjectionMatrix();
 			resizeUniforms(w, h);
 
-		}, 3000);
+		}, 1000 * parameters.debug.renderdelay);
 	}
 }
 
