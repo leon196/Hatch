@@ -15,9 +15,11 @@ import Mouse from './engine/mouse';
 
 export default function() {
 
-
 	assets.load(function() {
+		initUniforms();
 		initEngine();
+
+		gui.add(engine, 'screenshot');
 
 		assets.shaders.render.uniforms = uniforms;
 

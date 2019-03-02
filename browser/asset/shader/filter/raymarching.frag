@@ -3,20 +3,7 @@ uniform sampler2D framebuffer;
 uniform vec3 cameraPos, cameraTarget;
 uniform vec2 resolution;
 uniform float time;
-
-float iso (vec3 p, float r) { return dot(p, normalize(sign(p)))-r; }
-float opSmoothSubtraction( float d1, float d2, float k ) {
-    float h = clamp( 0.5 - 0.5*(d2+d1)/k, 0.0, 1.0 );
-    return mix( d2, -d1, h ) + k*h*(1.0-h); }
-float opSmoothIntersection( float d1, float d2, float k ) {
-    float h = clamp( 0.5 - 0.5*(d2-d1)/k, 0.0, 1.0 );
-    return mix( d2, d1, h ) + k*h*(1.0-h); }
-void moda(inout vec2 p, float repetitions) {
-	float angle = 2.*PI/repetitions;
-	float a = atan(p.y, p.x) + angle/2.;
-	a = mod(a,angle) - angle/2.;
-	p = vec2(cos(a), sin(a))*length(p);
-}
+uniform float count, range, radius, height, thin, blend, rotationX, rotationY, rotationZ, amplitude, spice, raydamping, framedamping, eyeoffset;
 
 float fbm (vec3 p) {
   float amplitude = .5;
@@ -28,7 +15,6 @@ float fbm (vec3 p) {
   return result;
 }
 
-
 float map (vec3 pos) {
   float scene = 10.0;
   float dist = length(pos);
@@ -36,20 +22,19 @@ float map (vec3 pos) {
   vec3 seed = pos;
   vec3 p = pos;
   float spicy = fbm(seed);
-  float r = 1.0 + spicy * .1;
-  const float count = 5.0;
-  for (float index = count; index > 0.0; --index)
-  {
-    float w = 0.6*r;
-    float b = 0.6*r;
-    p.xz *= rot(.5/r);// + time * 0.1);
-    p.yz *= rot(2./r);// + time * 0.05);
+  float r = 1.0 + spicy * spice;
+  for (float index = 5.0; index > 0.0; --index) {
+    float w = range*r;
+    float b = blend*r;
+    p.xz *= rot(rotationY/r);// + time * 0.1);
+    p.yz *= rot(rotationX/r);// + time * 0.05);
+    p.yx *= rot(rotationZ/r);// + time * 0.05);
     p = abs(p)-w;
     // float wave = 0.5 + 0.5 * sin(time + p.z * 4. / r);
-    float s = 0.001;//(.01+wave*.1)*r;
+    float s = thin;//(.01+wave*.1)*r;
     // p = abs(p)-w/2.;
     scene = smoothmin(scene, length(p.xy)-s, b);
-    r /= 2.0;
+    r /= amplitude;
   }
 
   // pos = repeat(pos, 2.5);
@@ -69,15 +54,15 @@ vec4 raymarch (vec3 eye, vec3 ray) {
 	vec4 result = vec4(eye, 0);
 	float total = 0.0;
   float maxt = 20.0;
-  const float count = 50.;
-  for (float index = count; index > 0.0; --index) {
+  const float raycount = 30.;
+  for (float index = raycount; index > 0.0; --index) {
     result.xyz = eye + ray * total;
     float dist = map(result.xyz);
     if (dist < 0.001 + total * .002 || total > maxt) {
-      result.w = index / count;
+      result.w = index / raycount;
       break;
     }
-    dist *= 0.5 + 0.1 * dither;
+    dist *= raydamping + 0.1 * dither;
     total += dist;
   }
   result.w *= step(total, maxt);
@@ -89,10 +74,10 @@ void main () {
   vec3 eye = cameraPos;
   vec3 at = cameraTarget;
   vec3 ray = look(eye, at, uv);
-  vec3 eyeoffset = 0.02*normalize(cross(normalize(at-eye), vec3(0,1,0)));
+  vec3 offset = eyeoffset*normalize(cross(normalize(at-eye), vec3(0,1,0)));
 
-  vec4 resultLeft = raymarch(eye-eyeoffset, ray);
-  vec4 resultRight = raymarch(eye+eyeoffset, ray);
+  vec4 resultLeft = raymarch(eye-offset, ray+offset);
+  vec4 resultRight = raymarch(eye+offset, ray-offset);
 
   vec3 color = vec3(0);
   color.r += resultLeft.w;
@@ -106,7 +91,6 @@ void main () {
   // color *= pow(shade, 1.0/4.5);
   // color *= step(length(eye-resultLeft.xyz), maxt);
 
-  gl_FragColor = texture2D(framebuffer, gl_FragCoord.xy/resolution)*.9 + .1*vec4(color, 1);
+  gl_FragColor = texture2D(framebuffer, gl_FragCoord.xy/resolution)*framedamping + (1.-framedamping)*vec4(color, 1);
   // gl_FragColor.rgb = color;
-  // gl_FragColor.w = total;// * step(0.001, length(color));
 }
