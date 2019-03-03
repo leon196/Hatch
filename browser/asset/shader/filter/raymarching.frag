@@ -76,8 +76,8 @@ void main () {
   vec3 ray = look(eye, at, uv);
   vec3 offset = eyeoffset*normalize(cross(normalize(at-eye), vec3(0,1,0)));
 
-  vec4 resultLeft = raymarch(eye-offset, ray+offset);
-  vec4 resultRight = raymarch(eye+offset, ray-offset);
+  vec4 resultLeft = raymarch(eye-offset, ray);//+offset);
+  vec4 resultRight = raymarch(eye+offset, ray);//-offset);
 
   vec3 color = vec3(0);
   color.r += resultLeft.w;
