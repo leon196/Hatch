@@ -43,8 +43,8 @@ export default class Bloom {
       renderer.setRenderTarget(this.renderTarget[0]);
       renderer.render(this.scene.blurv, this.camera);
     }
-    renderer.setRenderTarget(this.bloomTarget);
-    renderer.render(this.scene.bloom, this.camera);
+    // renderer.setRenderTarget(this.bloomTarget);
+    // renderer.render(this.scene.bloom, this.camera);
     renderer.setRenderTarget(null);
   }
   resize() {

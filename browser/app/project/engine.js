@@ -25,8 +25,8 @@ export var engine = {
 
 export function initEngine () {
 		
-	engine.camera.position.x = -1;
-	engine.camera.position.y = 1;
+	engine.camera.position.x = 0.1;
+	engine.camera.position.y = -0.2;
 	engine.camera.position.z = 3;
 	engine.controls = new OrbitControls(engine.camera, renderer.domElement);
 	engine.controls.enableDamping = true;
@@ -36,7 +36,7 @@ export function initEngine () {
 	initUniforms();
 
 	engine.scene = new THREE.Scene();
-	Geometry.create(Geometry.random(100), [10, 10]).forEach(geometry =>
+	Geometry.create(Geometry.random(1000), [1, 10]).forEach(geometry =>
 		engine.scene.add(new THREE.Mesh(geometry, assets.shaders.sprites)));
 
 	engine.framebuffer = new FrameBuffer({ material: assets.shaders.raymarching });
