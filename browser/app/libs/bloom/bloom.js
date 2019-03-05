@@ -35,12 +35,17 @@ export default class Bloom {
     this.scene.bloom.add(this.plane.bloom.mesh);
   }
   render(renderer) {
-    renderer.render(this.scene.bright, this.camera, this.renderTarget[0]);
+    renderer.setRenderTarget(this.renderTarget[0]);
+    renderer.render(this.scene.bright, this.camera);
     for (var i = 0; i < this.blurCount; i++) {
-      renderer.render(this.scene.blurh, this.camera, this.renderTarget[1]);
-      renderer.render(this.scene.blurv, this.camera, this.renderTarget[0]);
+      renderer.setRenderTarget(this.renderTarget[1]);
+      renderer.render(this.scene.blurh, this.camera);
+      renderer.setRenderTarget(this.renderTarget[0]);
+      renderer.render(this.scene.blurv, this.camera);
     }
-    renderer.render(this.scene.bloom, this.camera, this.bloomTarget);
+    renderer.setRenderTarget(this.bloomTarget);
+    renderer.render(this.scene.bloom, this.camera);
+    renderer.setRenderTarget(null);
   }
   resize() {
     this.renderTarget[0].setSize(window.innerWidth / 4, window.innerHeight / 4);

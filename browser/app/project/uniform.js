@@ -18,8 +18,9 @@ export var uniforms = {
 	cameraPos: { value: [0,0,0] },
 	cameraTarget: { value: [0,0,0] },
 	framebuffer: { value: 0 }, 
+	frametarget: { value: 0 }, 
 	blur: { value: 0 }, 
-	bloom: { value: 0 }, 
+	bloom: { value: 0 },
 };
 
 export function initUniforms () {

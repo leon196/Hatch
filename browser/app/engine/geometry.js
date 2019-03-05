@@ -8,7 +8,7 @@ export default class Geometry {
 		subdivisions = subdivisions || [1,1];
 		var count = attributes.position.array.length / attributes.position.itemSize;
 		var geometries = [];
-		var verticesMax = 65000;
+		var verticesMax = Math.pow(2, 16);
 		var dimension = closestPowerOfTwo(Math.sqrt(count));
 		var geometryCount = 1 + Math.floor(count / verticesMax);
 		var faces = [subdivisions[0]+1, subdivisions[1]+1];

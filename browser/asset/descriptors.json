@@ -7,6 +7,11 @@
 	"geometries": {
 	},
 	"shaders": {
+		"sprites": {
+			"vertexShader": "shader/sprites.vert",
+			"fragmentShader": "shader/sprites.frag",
+			"side": 2
+		},
 		"shape2D": {
 			"vertexShader": "shader/ui/shape2D.vert",
 			"fragmentShader": "shader/ui/shape2D.frag",
