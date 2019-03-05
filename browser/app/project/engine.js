@@ -25,9 +25,9 @@ export var engine = {
 
 export function initEngine () {
 		
-	engine.camera.position.x = 0.1;
-	engine.camera.position.y = -0.2;
-	engine.camera.position.z = 3;
+	engine.camera.position.x = 0.02;
+	engine.camera.position.y = -0.05;
+	engine.camera.position.z = 0.2;
 	engine.controls = new OrbitControls(engine.camera, renderer.domElement);
 	engine.controls.enableDamping = true;
 	engine.controls.dampingFactor = 0.1;
@@ -36,11 +36,13 @@ export function initEngine () {
 	initUniforms();
 
 	engine.scene = new THREE.Scene();
-	Geometry.create(Geometry.random(1000), [1, 10]).forEach(geometry =>
+	Geometry.create(Geometry.random(1000), [1, 20]).forEach(geometry =>
 		engine.scene.add(new THREE.Mesh(geometry, assets.shaders.sprites)));
 
 	engine.framebuffer = new FrameBuffer({ material: assets.shaders.raymarching });
-	engine.frametarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight);
+	engine.frametarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+		format: THREE.RGBAFormat,
+		type: THREE.FloatType});
 	engine.bloom = new Bloom(engine.frametarget.texture);
 
 	engine.framerender = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), assets.shaders.render);
