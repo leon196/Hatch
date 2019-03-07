@@ -52,11 +52,25 @@ export function initEngine () {
 	uniforms.frametarget.value = engine.frametarget.texture;
 	uniforms.blur.value = engine.bloom.blurTarget.texture;
 	uniforms.bloom.value = engine.bloom.bloomTarget.texture;
-
+/*
+<<<<<<< HEAD
 	gui.add(engine, 'screenshot');
 	timeline.start();
-}
+=======
+			var w = window.innerWidth / renderer.scale;
+			var h = window.innerHeight / renderer.scale;
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			engine.framebuffer.setSize(w,h);
+			engine.camera.aspect = w/h;
+			engine.camera.updateProjectionMatrix();
+			resizeUniforms(w, h);
 
+		}, 3000);
+	}
+>>>>>>> parent of 4d29030... render delay
+}
+*/
+}
 export function updateEngine (elapsed)
 {
 	engine.controls.update();
