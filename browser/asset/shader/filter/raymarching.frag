@@ -8,7 +8,7 @@ uniform float count, range, radius, height, thin, blend, rotationX, rotationY, r
 float fbm (vec3 p) {
   float amplitude = .5;
   float result = 0.0;
-  for (float index = 0.0; index <= 3.0; ++index) {
+  for (float index = 0.0; index <= 5.0; ++index) {
     result += noise(p / amplitude) * amplitude;
     amplitude /= 2.;
   }
@@ -19,11 +19,11 @@ float map (vec3 pos) {
   float scene = 10.0;
   float dist = length(pos);
   // pos.xz *= rot(dist);
-  vec3 seed = pos;
+  vec3 seed = pos * 2.;
   vec3 p = pos;
-  float spicy = fbm(seed);
-  float r = 1.0 + spicy * spice;
-  for (float index = 5.0; index > 0.0; --index) {
+  // float spicy = fbm(seed + noise(seed));
+  float r = 1.0;// + spicy * spice;
+  for (float index = 4.0; index > 0.0; --index) {
     float w = range*r;
     float b = blend*r;
     p.xz *= rot(rotationY/r);// + time * 0.1);
@@ -31,11 +31,17 @@ float map (vec3 pos) {
     p.yx *= rot(rotationZ/r);// + time * 0.05);
     p = abs(p)-w;
     // float wave = 0.5 + 0.5 * sin(time + p.z * 4. / r);
-    float s = thin;//(.01+wave*.1)*r;
+    float s = thin * r;//(.01+wave*.1)*r;
     // p = abs(p)-w/2.;
-    scene = smoothmin(scene, length(p.xy)-s, b);
+    // scene = smoothmin(scene, length(p.xz)-s, b);
+    // scene = smoothmin(scene, length(p)-radius*r, b);
+    // scene = smoothmin(scene, torus(p, vec2(radius*r,s)), b);
+    // scene = smoothmin(scene, box(p, vec3(radius*r)), b);
+    // scene = smoothmin(scene, max(-p.x, max(-p.y, -p.z)), b);
+    scene = smoothmin(scene, sdCylinderSquare(p.xz, s), b);
     r /= amplitude;
   }
+  // scene = max(-scene, 0.0);
 
   // pos = repeat(pos, 2.5);
 
@@ -54,11 +60,11 @@ vec4 raymarch (vec3 eye, vec3 ray) {
 	vec4 result = vec4(eye, 0);
 	float total = 0.0;
   float maxt = 20.0;
-  const float raycount = 30.;
+  const float raycount = 40.;
   for (float index = raycount; index > 0.0; --index) {
     result.xyz = eye + ray * total;
     float dist = map(result.xyz);
-    if (dist < 0.001 + total * .002 || total > maxt) {
+    if (dist < 0.00001 + total * .0001 || total > maxt) {
       result.w = index / raycount;
       break;
     }
@@ -69,24 +75,33 @@ vec4 raymarch (vec3 eye, vec3 ray) {
 	return result;
 }
 
+vec3 getMaterial (vec3 pos, vec3 ray) {
+  vec3 normal = getNormal(pos);
+  vec3 color = vec3(0);
+  color += vec3(0.752, 0.949, 0.831) * pow(clamp(dot(normal, normalize(vec3(0,-3,1))), 0.0, 1.0), 4.);
+  color += vec3(0.921, 0.905, 0.658) * pow(clamp(dot(normal, normalize(vec3(-1,3,3))), 0.0, 1.0), 4.);
+  color += vec3(0.972, 0.556, 0.329) * pow(clamp(dot(normal, -ray), 0.0, 1.0), 4.);
+  // color += vec3(0.972, 0.556, 0.329) * clamp(dot(ray, normalize(pos))*.5+.5, 0.0, 1.0);
+  return color;
+}
+
 void main () {
   vec2 uv = (gl_FragCoord.xy-0.5*resolution.xy)/resolution.y;
   vec3 eye = cameraPos;
   vec3 at = cameraTarget;
   vec3 ray = look(eye, at, uv);
   vec3 offset = eyeoffset*normalize(cross(normalize(at-eye), vec3(0,1,0)));
+  vec3 rayLeft = ray+offset;
+  vec3 rayRight = ray-offset;
 
-  vec4 resultLeft = raymarch(eye-offset, ray+offset);
-  vec4 resultRight = raymarch(eye+offset, ray-offset);
+  vec4 resultLeft = raymarch(eye-offset, rayLeft);
+  vec4 resultRight = raymarch(eye+offset, rayRight);
 
   vec3 color = vec3(0);
-  color.r += resultLeft.w;
+  // color.r += getMaterial(resultLeft.xyz, rayLeft).r * resultLeft.w;
+  // color.gb += getMaterial(resultRight.xyz, rayRight).gb * resultRight.w;
+  color.r +=  resultLeft.w;
   color.gb += resultRight.w;
-
-  // vec3 normal = getNormal(resultLeft);
-  // color += vec3(0.752, 0.949, 0.831) * pow(clamp(dot(normal, normalize(vec3(0,-3,1))), 0.0, 1.0), 4.);
-  // color += vec3(0.921, 0.905, 0.658) * pow(clamp(dot(normal, normalize(vec3(-1,3,3))), 0.0, 1.0), 4.);
-  // color += vec3(0.972, 0.556, 0.329) * clamp(dot(ray, normalize(pos))*.5+.5, 0.0, 1.0);
 
   // color *= pow(shade, 1.0/4.5);
   // color *= step(length(eye-resultLeft.xyz), maxt);

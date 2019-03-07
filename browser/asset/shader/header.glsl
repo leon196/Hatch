@@ -26,12 +26,16 @@ vec3 look (vec3 eye, vec3 target, vec2 anchor) {
     vec3 forward = normalize(target-eye);
     vec3 right = normalize(cross(forward, vec3(0,1,0)));
     vec3 up = normalize(cross(right, forward));
-    return normalize(forward * .5 + right * anchor.x + up * anchor.y);
+    return normalize(forward + right * anchor.x + up * anchor.y);
 }
 float sdCapsule( vec3 p, vec3 a, vec3 b, float r ) {
     vec3 pa = p - a, ba = b - a;
     float h = clamp( dot(pa,ba)/dot(ba,ba), 0.0, 1.0 );
     return length( pa - ba*h ) - r;
+}
+float sdCylinderSquare( vec2 p, float r ) {
+    vec2 d = abs(p) - r;
+    return min(max(d.x,d.y),0.0) + length(max(d,0.0));
 }
 
 
