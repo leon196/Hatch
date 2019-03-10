@@ -38,21 +38,35 @@ vec3 calcVolumetric(Ray ray, float maxDist) {
 float map (vec3 pos) {
   float scene = 10.0;
   float dist = length(pos);
+  // pos.xz *= rot(dist);
   vec3 seed = pos * 2.;
   vec3 p = pos;
   float spicy = fbm(seed + noise(seed));
   float r = 1.0 + spicy * spice;
-  for (float index = 2.0; index > 0.0; --index) {
+  for (float index = 4.0; index > 0.0; --index) {
     float w = range*r;
     float b = blend*r;
-    p.xz *= rot(rotationY/r);
-    p.yz *= rot(rotationX/r);
-    p.yx *= rot(rotationZ/r);
+    p.xz *= rot(rotationY/r);// + time * 0.1);
+    p.yz *= rot(rotationX/r);// + time * 0.05);
+    p.yx *= rot(rotationZ/r);// + time * 0.05);
     p = abs(p)-w;
-    float s = thin * r;
+    // float wave = 0.5 + 0.5 * sin(time + p.z * 4. / r);
+    float s = thin * r;//(.01+wave*.1)*r;
+    // p = abs(p)-w/2.;
+    // scene = smoothmin(scene, length(p.xz)-s, b);
+    // scene = smoothmin(scene, length(p)-radius*r, b);
+    // scene = smoothmin(scene, torus(p, vec2(radius*r,s)), b);
+    // scene = smoothmin(scene, box(p, vec3(radius*r)), b);
+    // scene = smoothmin(scene, max(-p.x, max(-p.y, -p.z)), b);
     scene = smoothmin(scene, sdCylinderSquare(p.xz, s), b);
     r /= amplitude;
   }
+  // scene = max(-scene, 0.0);
+
+  // pos = repeat(pos, 2.5);
+
+  // scene = min(scene, box(pos, vec3(0.5)));
+
   return scene;
 }
 
@@ -86,9 +100,22 @@ void main () {
   vec3 eye = cameraPos;
   vec3 at = cameraTarget;
   vec3 ray = look(eye, at, uv);
-  vec4 result = raymarch(eye, ray);
-  vec3 color = vec3(1);
-  color *= result.w;
+  vec3 offset = eyeoffset*normalize(cross(normalize(at-eye), vec3(0,1,0)));
+  vec3 rayLeft = ray+offset;
+  vec3 rayRight = ray-offset;
+
+  vec4 resultLeft = raymarch(eye-offset, rayLeft);
+  vec4 resultRight = raymarch(eye+offset, rayRight);
+
+  vec3 color = vec3(0);
+  // color.r += getMaterial(resultLeft.xyz, rayLeft).r * resultLeft.w;
+  // color.gb += getMaterial(resultRight.xyz, rayRight).gb * resultRight.w;
+  color.r +=  resultLeft.w;
+  color.gb += resultRight.w;
+
+  // color *= pow(shade, 1.0/4.5);
+  // color *= step(length(eye-resultLeft.xyz), maxt);
+
   gl_FragColor = texture2D(framebuffer, gl_FragCoord.xy/resolution)*framedamping + (1.-framedamping)*vec4(color, 1);
   // gl_FragColor.rgb = color;
 }

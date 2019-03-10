@@ -7,27 +7,29 @@ import parameters from '../engine/parameters';
 import Geometry from '../engine/geometry';
 import assets from '../engine/assets';
 import Bloom from '../libs/bloom/bloom';
+import { AnaglyphEffect } from '../libs/AnaglyphEffect';
 import { gui } from '../engine/gui';
 import { OrbitControls } from '../libs/OrbitControls';
 import { uniforms, initUniforms, updateUniforms, resizeUniforms } from './uniform';
 import { clamp, lerp, lerpArray, lerpVector, lerpArray2, lerpVectorArray, saturate } from '../engine/misc';
 
 export var engine = {
-	camera: new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.001, 1000),
+	camera: new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.001, 1000),
 	target: new THREE.Vector3(),
 	scene: null,
 	controls: null,
 	framebuffer: null,
 	frametarget: null,
 	framerender: null,
+	anaglyph: null,
 	bloom: null,
 }
 
 export function initEngine () {
-		
+
 	engine.camera.position.x = 0.02;
 	engine.camera.position.y = -0.05;
-	engine.camera.position.z = 0.2;
+	engine.camera.position.z = 2.0;
 	engine.controls = new OrbitControls(engine.camera, renderer.domElement);
 	engine.controls.enableDamping = true;
 	engine.controls.dampingFactor = 0.1;
@@ -38,7 +40,7 @@ export function initEngine () {
 	engine.scene = new THREE.Scene();
 	Geometry.create(Geometry.random(1000), [1, 20]).forEach(geometry =>
 		engine.scene.add(new THREE.Mesh(geometry, assets.shaders.sprites)));
-
+	
 	engine.framebuffer = new FrameBuffer({ material: assets.shaders.raymarching });
 	engine.frametarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
 		format: THREE.RGBAFormat,
@@ -52,40 +54,27 @@ export function initEngine () {
 	uniforms.frametarget.value = engine.frametarget.texture;
 	uniforms.blur.value = engine.bloom.blurTarget.texture;
 	uniforms.bloom.value = engine.bloom.bloomTarget.texture;
-/*
-<<<<<<< HEAD
-	gui.add(engine, 'screenshot');
-	timeline.start();
-=======
-			var w = window.innerWidth / renderer.scale;
-			var h = window.innerHeight / renderer.scale;
-			renderer.setSize(window.innerWidth, window.innerHeight);
-			engine.framebuffer.setSize(w,h);
-			engine.camera.aspect = w/h;
-			engine.camera.updateProjectionMatrix();
-			resizeUniforms(w, h);
 
-		}, 3000);
-	}
->>>>>>> parent of 4d29030... render delay
-}
-*/
+	engine.anaglyph = new AnaglyphEffect(renderer, window.innerWidth, window.innerHeight);
+
+	gui.add(engine, 'screenshot');
 }
 export function updateEngine (elapsed)
 {
 	engine.controls.update();
 	updateUniforms(elapsed);
 
-	// engine.framebuffer.update();
-	// uniforms.framebuffer.value = engine.framebuffer.getTexture();
+	engine.framebuffer.update();
+	uniforms.framebuffer.value = engine.framebuffer.getTexture();
 
 	// record(scene, camera);
 
 	renderer.clear();
 	renderer.setRenderTarget(engine.frametarget);
-	renderer.render(engine.scene, engine.camera);
+	// renderer.render(engine.scene, engine.camera);
+	engine.anaglyph.render(engine.scene, engine.camera);
 	renderer.setRenderTarget(null);
-	engine.bloom.render(renderer);
+	// engine.bloom.render(renderer);
 	renderer.render(engine.framerender, engine.camera);
 	
 	// array = assets.animations.getPosition('target', elapsed);
@@ -101,6 +90,7 @@ export function resizeEngine (width, height)
 	engine.camera.aspect = width/height;
 	engine.camera.updateProjectionMatrix();
 	engine.frametarget.setSize(width, height);
+	engine.anaglyph.setSize(width, height);
 	resizeUniforms(width, height);
 }
 

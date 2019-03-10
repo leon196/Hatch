@@ -15,5 +15,6 @@ export default {
 		framedamping: 0.9,
 		renderwidth: 3508,
 		renderheight: 2480,
+		renderdelay: 0,
 	},
 }

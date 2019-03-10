@@ -5,7 +5,10 @@
  * @author tschw
  */
 
-THREE.AnaglyphEffect = function ( renderer, width, height ) {
+
+import * as THREE from 'three.js';
+
+export var AnaglyphEffect = function ( renderer, width, height ) {
 
 	// Matrices generated with angler.js https://github.com/tschw/angler.js/
 	// (in column-major element order, as accepted by WebGL)
@@ -33,6 +36,7 @@ THREE.AnaglyphEffect = function ( renderer, width, height ) {
 	var _scene = new THREE.Scene();
 
 	var _stereo = new THREE.StereoCamera();
+	_stereo.eyeSep = 0.2;
 
 	var _params = { minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter, format: THREE.RGBAFormat };
 
@@ -138,18 +142,18 @@ THREE.AnaglyphEffect = function ( renderer, width, height ) {
 
 		_stereo.update( camera );
 
-		renderer.setRenderTarget( _renderTargetL );
+		renderer.setRenderTarget( _renderTargetR );
 		renderer.clear();
 		renderer.render( scene, _stereo.cameraL );
 
-		renderer.setRenderTarget( _renderTargetR );
+		renderer.setRenderTarget( _renderTargetL );
 		renderer.clear();
 		renderer.render( scene, _stereo.cameraR );
 
-		renderer.setRenderTarget( null );
-		renderer.render( _scene, _camera );
-
 		renderer.setRenderTarget( currentRenderTarget );
+		renderer.render( _scene, _camera );
+		renderer.setRenderTarget( null );
+
 
 	};
 
