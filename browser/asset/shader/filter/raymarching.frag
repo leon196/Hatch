@@ -14,27 +14,7 @@ float fbm (vec3 p) {
   }
   return result;
 }
-/*
-vec3 calcVolumetric(Ray ray, float maxDist) {
-  vec3 col = vec3(0.);
-  Light l   = getLight();
-  float is  = maxDist / 50.;
-  float vrs = maxDist / float(SAMPLES - 1);
-  float rs  = rand(gl_FragCoord.xy) + vrs;
-  Ray volRay = Ray(ray.ori + ray.dir * rs, vec3(0.));
-  for(int v = 0; v < SAMPLES; v++) {
-    vec3 lv    = l.p - volRay.ori;
-    float ld   = length(lv);
-    volRay.dir = lv / ld;
-    Hit i      = raymarch(volRay);
-    if(i.dst > ld) {
-      col += calcIrradiance(l, volRay.ori) * is;
-    }
-    volRay.ori += ray.dir * vrs;
-  }
-  return col;
-}
-*/
+
 float map (vec3 pos) {
   float scene = 10.0;
   float dist = length(pos);
@@ -80,7 +60,19 @@ vec4 raymarch (vec3 eye, vec3 ray) {
   result.w *= step(total, maxt);
   return result;
 }
-
+/*
+float volumetric (vec3 eye, vec3 ray) {
+  vec3 pos = eye;
+  vec3 light = vec3(-4,1,0);
+  const float count = 5.0;
+  float max = 10.0;
+  float march = max / count;
+  for (float index = count; index > 0.0; --index) {
+    float dist = map(pos);
+    // if (dist >)
+  }
+}
+*/
 void main () {
   vec2 uv = (gl_FragCoord.xy-0.5*resolution.xy)/resolution.y;
   vec3 eye = cameraPos;
