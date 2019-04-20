@@ -5,14 +5,15 @@
 	"textures": {
 	},
 	"geometries": {
+		"geo": {
+			"file": "mesh/geo.ply"
+		}
 	},
 	"shaders": {
 		"sprites": {
 			"vertexShader": "shader/sprites.vert",
 			"fragmentShader": "shader/sprites.frag",
-			"side": 2,
-			"depthTest": false,
-			"transparent": true
+			"side": 2
 		},
 		"shape2D": {
 			"vertexShader": "shader/ui/shape2D.vert",
@@ -23,6 +24,27 @@
 		"bloom": {
 			"vertexShader": "shader/filter/bloom/bloom.vert",
 			"fragmentShader": "shader/filter/bloom/bloom.frag"
+		},
+		"geo": {
+			"vertexShader": "shader/geo.vert",
+			"fragmentShader": "shader/geo.frag"
+		},
+		"geo2": {
+			"vertexShader": "shader/geo2.vert",
+			"fragmentShader": "shader/geo2.frag",
+			"side": 2
+		},
+		"curves": {
+			"vertexShader": "shader/curves.vert",
+			"fragmentShader": "shader/curves.frag",
+			"side": 2
+		},
+		"text": {
+			"vertexShader": "shader/text.vert",
+			"fragmentShader": "shader/text.frag",
+			"side": 2,
+			"depthTest": false,
+			"transparent": true
 		},
 		"bright": {
 			"vertexShader": "shader/filter/bloom/bright.vert",
@@ -38,8 +60,7 @@
 		},
 		"raymarching": {
 			"vertexShader": "shader/filter/fullscreen.vert",
-			"fragmentShader": "shader/filter/raymarching.frag"
+			"fragmentShader": "shader/filter/raymarching.save.frag"
 		}
 	}
 }
-

@@ -23,6 +23,6 @@ gui.go = function() {
 		}
 		folder.open();
 	});
-	// gui.close();
+	gui.close();
 	gui.gone = true;
 }

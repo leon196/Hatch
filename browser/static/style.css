@@ -1,4 +1,12 @@
 
+@font-face {
+    font-family: 'kanit';
+    src: url('kanit-black-webfont.woff2') format('woff2'),
+         url('kanit-black-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
 
 @font-face {
 	font-family: 'bebasneue_bold';
