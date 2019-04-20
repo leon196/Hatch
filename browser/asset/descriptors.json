@@ -10,38 +10,28 @@
 		}
 	},
 	"shaders": {
-		"sprites": {
-			"vertexShader": "shader/sprites.vert",
-			"fragmentShader": "shader/sprites.frag",
+		"dust": {
+			"vertexShader": "shader/particle/dust.vert",
+			"fragmentShader": "shader/color.frag"
+		},
+		"egg": {
+			"vertexShader": "shader/mesh/egg.vert",
+			"fragmentShader": "shader/mesh/egg.frag",
 			"side": 2
 		},
-		"shape2D": {
-			"vertexShader": "shader/ui/shape2D.vert",
-			"fragmentShader": "shader/ui/shape2D.frag",
-			"depthTest": false,
-			"transparent": true
-		},
-		"bloom": {
-			"vertexShader": "shader/filter/bloom/bloom.vert",
-			"fragmentShader": "shader/filter/bloom/bloom.frag"
-		},
-		"geo": {
-			"vertexShader": "shader/geo.vert",
-			"fragmentShader": "shader/geo.frag"
-		},
-		"geo2": {
-			"vertexShader": "shader/geo2.vert",
-			"fragmentShader": "shader/geo2.frag",
+		"eggcrack": {
+			"vertexShader": "shader/line/eggcrack.vert",
+			"fragmentShader": "shader/color.frag",
 			"side": 2
 		},
 		"curves": {
-			"vertexShader": "shader/curves.vert",
-			"fragmentShader": "shader/curves.frag",
+			"vertexShader": "shader/line/curves.vert",
+			"fragmentShader": "shader/line/curves.frag",
 			"side": 2
 		},
 		"text": {
-			"vertexShader": "shader/text.vert",
-			"fragmentShader": "shader/text.frag",
+			"vertexShader": "shader/mesh/text.vert",
+			"fragmentShader": "shader/mesh/text.frag",
 			"side": 2,
 			"depthTest": false,
 			"transparent": true
@@ -54,13 +44,17 @@
 			"vertexShader": "shader/filter/bloom/gaussian_blur.vert",
 			"fragmentShader": "shader/filter/bloom/gaussian_blur.frag"
 		},
+		"bloom": {
+			"vertexShader": "shader/filter/bloom/bloom.vert",
+			"fragmentShader": "shader/filter/bloom/bloom.frag"
+		},
 		"render": {
 			"vertexShader": "shader/filter/fullscreen.vert",
 			"fragmentShader": "shader/filter/render.frag"
 		},
-		"raymarching": {
+		"edge": {
 			"vertexShader": "shader/filter/fullscreen.vert",
-			"fragmentShader": "shader/filter/raymarching.save.frag"
+			"fragmentShader": "shader/filter/edge.frag"
 		}
 	}
 }

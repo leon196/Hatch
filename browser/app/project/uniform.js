@@ -45,7 +45,7 @@ export function updateUniforms (elapsed) {
 	var dt = Math.max(0.01, Math.min(1., elapsed - uniforms.time.value));
 	uniforms.time.value = elapsed;
 	uniforms.cameraPos.value = engine.camera.position;
-	uniforms.cameraTarget.value = engine.controls.target;
+	uniforms.cameraTarget.value = engine.target;
 	uniforms.mouse.value[0] = Mouse.x;
 	uniforms.mouse.value[1] = Mouse.y;
 	keys.forEach(name => {

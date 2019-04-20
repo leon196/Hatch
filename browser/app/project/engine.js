@@ -18,10 +18,13 @@ export var engine = {
 	camera: new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.001, 1000),
 	target: new THREE.Vector3(),
 	scene: null,
+	sceneedge: null,
+	scenerender: null,
 	controls: null,
 	framebuffer: null,
 	frametarget: null,
-	framerender: null,
+	framebloom: null,
+	frameedge: null,
 	anaglyph: null,
 	bloom: null,
 }
@@ -31,65 +34,68 @@ export function initEngine () {
 	engine.camera.position.x = 0.02;
 	engine.camera.position.y = -0.05;
 	engine.camera.position.z = 2.0;
-	engine.controls = new OrbitControls(engine.camera, renderer.domElement);
-	engine.controls.enableDamping = true;
-	engine.controls.dampingFactor = 0.1;
-	engine.controls.rotateSpeed = 0.1;
+	// engine.controls = new OrbitControls(engine.camera, renderer.domElement);
+	// engine.controls.enableDamping = true;
+	// engine.controls.dampingFactor = 0.1;
+	// engine.controls.rotateSpeed = 0.1;
 
 	initUniforms();
 
 	engine.scene = new THREE.Scene();
 	Geometry.create(Geometry.random(1000), [3, 3]).forEach(geometry =>
-		engine.scene.add(new THREE.Mesh(geometry, assets.shaders.sprites)));
+		engine.scene.add(new THREE.Mesh(geometry, assets.shaders.dust)));
 	Geometry.create(Geometry.random(10), [1, 100]).forEach(geometry =>
 		engine.scene.add(new THREE.Mesh(geometry, assets.shaders.curves)));
-	// Geometry.createLine(assets.geometries.geo).forEach(geometry =>
-	// 	engine.scene.add(new THREE.Mesh(geometry, assets.shaders.geo)));
-	// engine.scene.add(new THREE.Mesh(new THREE.PlaneGeometry(1,1), assets.shaders.text))
-	engine.scene.add(new THREE.Mesh(assets.geometries.geo, assets.shaders.geo2))
+	Geometry.createLine(assets.geometries.geo).forEach(geometry =>
+		engine.scene.add(new THREE.Mesh(geometry, assets.shaders.eggcrack)));
+	engine.scene.add(new THREE.Mesh(new THREE.PlaneGeometry(1,1), assets.shaders.text))
+	engine.scene.add(new THREE.Mesh(assets.geometries.geo, assets.shaders.egg))
+
 
 	// engine.framebuffer = new FrameBuffer({ material: assets.shaders.raymarching });
 	engine.frametarget = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
 		format: THREE.RGBAFormat,
 		type: THREE.FloatType});
-	engine.bloom = new Bloom(engine.frametarget.texture);
+	engine.framebloom = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+		format: THREE.RGBAFormat,
+		type: THREE.FloatType});
+	engine.frameedge = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight, {
+		format: THREE.RGBAFormat,
+		type: THREE.FloatType});
+	engine.bloom = new Bloom(engine.frameedge.texture);
 
-	engine.framerender = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), assets.shaders.render);
-	engine.framerender.frustumCulled = false;
+	engine.sceneedge = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), assets.shaders.edge);
+	engine.sceneedge.frustumCulled = false;
+	engine.scenerender = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), assets.shaders.render);
+	engine.scenerender.frustumCulled = false;
 
-	Object.keys(assets.shaders).forEach(key => assets.shaders[key].uniforms = uniforms);
-	uniforms.frametarget.value = engine.frametarget.texture;
-	uniforms.blur.value = engine.bloom.blurTarget.texture;
-	uniforms.bloom.value = engine.bloom.bloomTarget.texture;
+	uniforms.frametarget = {value: engine.frametarget.texture};
+	uniforms.frameedge = {value: engine.frameedge.texture};
+	uniforms.framebloom = {value: engine.framebloom.texture};
+	uniforms.blur = {value: engine.bloom.blurTarget.texture};
+	uniforms.bloom = {value: engine.bloom.bloomTarget.texture};
 
-
-
-	var words = [
-		{
-			text: 'HATCH',
-			font: 'kanit',
-			textAlign: 'center',
-			fontSize: 196,
-			fillStyle: 'white',
-			textAlign: 'center',
-			textBaseline: 'middle',
-			width: 1024,
-			height: 1024,
-			shadowColor: 'rgba(0,0,0,.5)',
-			shadowBlur: 4,
-		}
-	];
+	var words = [{
+		text: 'HATCH',
+		font: 'kanit',
+		textAlign: 'center',
+		fontSize: 196,
+		fillStyle: 'white',
+		textAlign: 'center',
+		textBaseline: 'middle',
+		width: 1024,
+		height: 1024,
+		shadowColor: 'rgba(0,0,0,.5)',
+		shadowBlur: 4,
+	}];
 	uniforms.textTexture = { value: makeText.createTexture(words) };
-
-	// engine.anaglyph = new AnaglyphEffect(renderer, window.innerWidth, window.innerHeight);
-
+	Object.keys(assets.shaders).forEach(key => assets.shaders[key].uniforms = uniforms);
 	gui.add(engine, 'screenshot');
 }
 
 var array = [0,0,0];
 
-export function updateEngine (elapsed)
-{
+export function updateEngine (elapsed) {
 	elapsed = timeline.getTime();
 	// engine.controls.update();
 	updateUniforms(elapsed);
@@ -102,10 +108,12 @@ export function updateEngine (elapsed)
 	renderer.clear();
 	renderer.setRenderTarget(engine.frametarget);
 	renderer.render(engine.scene, engine.camera);
+	renderer.setRenderTarget(engine.frameedge);
+	renderer.render(engine.sceneedge, engine.camera);
 	// engine.anaglyph.render(engine.scene, engine.camera);
 	renderer.setRenderTarget(null);
 	engine.bloom.render(renderer);
-	renderer.render(engine.framerender, engine.camera);
+	renderer.render(engine.scenerender, engine.camera);
 
 	// array = lerpArray(array, assets.animations.getPosition('Camera', elapsed), .9);
 	array = assets.animations.getPosition('Camera', elapsed);
@@ -124,6 +132,8 @@ export function resizeEngine (width, height)
 	engine.camera.aspect = width/height;
 	engine.camera.updateProjectionMatrix();
 	engine.frametarget.setSize(width, height);
+	engine.framebloom.setSize(width, height);
+	engine.frameedge.setSize(width, height);
 	// engine.anaglyph.setSize(width, height);
 	resizeUniforms(width, height);
 }

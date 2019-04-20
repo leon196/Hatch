@@ -1,5 +1,7 @@
 export default {
 	debug: {
+		brighty: 0.8,
+		bloomy: 0.8,
 		range: .8,
 		radius: .4,
 		height: .001,
