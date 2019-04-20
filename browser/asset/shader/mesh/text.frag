@@ -8,7 +8,10 @@ void main () {
 	vec2 uv = vUV;
 	uv.x = 1.-uv.x;
 
-	uv.x += (random(floor(uv.yy*64.+time)/64.)*2.-1.) * Scratch.y;
+	// float fade = .02/abs(uv.y*2.-1.-.02);
+	float fade = smoothstep(.05, .5, abs(uv.y*2.-1.-.02));
+
+	uv.xy += (random(floor((uv.yy+uv.xx)*128.)/128.)*2.-1.) * Scratch.y * fade;
 
 	vec4 color = texture2D(textTexture, uv);
 	gl_FragColor = color * Texting.y;

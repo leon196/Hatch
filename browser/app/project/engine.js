@@ -42,11 +42,11 @@ export function initEngine () {
 	initUniforms();
 
 	engine.scene = new THREE.Scene();
-	Geometry.create(Geometry.random(1000), [3, 3]).forEach(geometry =>
+	Geometry.create(Geometry.random(1000), [6, 6]).forEach(geometry =>
 		engine.scene.add(new THREE.Mesh(geometry, assets.shaders.dust)));
-	Geometry.create(Geometry.random(10), [1, 100]).forEach(geometry =>
+	Geometry.create(Geometry.random(10), [1, 200]).forEach(geometry =>
 		engine.scene.add(new THREE.Mesh(geometry, assets.shaders.curves)));
-	Geometry.createLine(assets.geometries.geo).forEach(geometry =>
+	Geometry.createLine(assets.geometries.geo, [1,10]).forEach(geometry =>
 		engine.scene.add(new THREE.Mesh(geometry, assets.shaders.eggcrack)));
 	engine.scene.add(new THREE.Mesh(new THREE.PlaneGeometry(1,1), assets.shaders.text))
 	engine.scene.add(new THREE.Mesh(assets.geometries.geo, assets.shaders.egg))
@@ -118,6 +118,9 @@ export function updateEngine (elapsed) {
 	// array = lerpArray(array, assets.animations.getPosition('Camera', elapsed), .9);
 	array = assets.animations.getPosition('Camera', elapsed);
 	engine.camera.position.set(array[0], array[1], array[2]);
+
+	engine.camera.fov = 60 + assets.animations.getPosition('ExtraFOV', elapsed)[1];
+	engine.camera.updateProjectionMatrix();
 
 	// array = lerpArray(array, assets.animations.getPosition('CameraTarget', elapsed), .9);
 	array = assets.animations.getPosition('CameraTarget', elapsed);
