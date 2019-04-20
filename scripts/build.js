@@ -7,7 +7,7 @@ const copyFile = require('quickly-copy-file');
 const rimraf = require('rimraf-promise');
 
 const rootPath = resolve(__dirname, '..');
-const buildPath = resolve(rootPath, 'dist', 'season');
+const buildPath = resolve(rootPath, 'dist', 'hatch');
 
 console.log('Cleaning build directories');
 Promise.all([

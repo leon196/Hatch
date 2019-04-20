@@ -75,7 +75,7 @@ export function initEngine () {
 	uniforms.blur = {value: engine.bloom.blurTarget.texture};
 	uniforms.bloom = {value: engine.bloom.bloomTarget.texture};
 
-	var words = [{
+	uniforms.textTexture = { value: makeText.createTexture([{
 		text: 'HATCH',
 		font: 'kanit',
 		textAlign: 'center',
@@ -87,10 +87,53 @@ export function initEngine () {
 		height: 1024,
 		shadowColor: 'rgba(0,0,0,.5)',
 		shadowBlur: 4,
-	}];
-	uniforms.textTexture = { value: makeText.createTexture(words) };
+		offsetY: 10,
+	}]) };
+	uniforms.creditTexture = { value: makeText.createTexture([{
+		text: 'PONK\n50D\nKOLTES',
+		font: 'bebasneue_bold',
+		textAlign: 'center',
+		fontSize: 196,
+		fillStyle: 'white',
+		textBaseline: 'middle',
+		width: 1024,
+		height: 1024,
+		shadowColor: 'rgba(0,0,0,.5)',
+		shadowBlur: 4,
+	}]) };
+	uniforms.jobsTexture = { value: makeText.createTexture([{
+		text: 'VISUAL\nMUSIC\nTOOL',
+		font: 'bebasneue_bold',
+		textAlign: 'center',
+		fontSize: 196,
+		fillStyle: 'white',
+		textBaseline: 'middle',
+		width: 1024,
+		height: 1024,
+		shadowColor: 'rgba(0,0,0,.5)',
+		shadowBlur: 4,
+	}]) };
+	uniforms.cookieTexture = { value: makeText.createTexture([{
+		text: 'Cookie',
+		font: 'bebasneue_bold',
+		textAlign: 'center',
+		fontSize: 300,
+		fillStyle: 'white',
+		textAlign: 'center',
+		textBaseline: 'middle',
+		width: 1024,
+		height: 1024,
+		shadowColor: 'rgba(0,0,0,.5)',
+		shadowBlur: 4,
+		offsetY: -40,
+	},{
+		text: 'Collective',
+		fontSize: 180,
+		offsetY: 130,
+	}]) };
 	Object.keys(assets.shaders).forEach(key => assets.shaders[key].uniforms = uniforms);
-	gui.add(engine, 'screenshot');
+	// gui.add(engine, 'screenshot');
+	timeline.start();
 }
 
 var array = [0,0,0];

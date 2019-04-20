@@ -17,7 +17,7 @@
 }
 
 body {
-	font-family: 'bowlbyonesc';
+	font-family: 'bebasneue_bold';
 	background: #000;
 	margin: 0;
 	overflow: hidden;
@@ -35,6 +35,10 @@ body {
 	display: inline-block;
 	vertical-align: middle;
 	line-height: normal;
+	font-size: 200px;
+	width: 100%;
+	text-align: center;
+	cursor: pointer;
 }
 
 .hide {

@@ -7,71 +7,75 @@ import { PLYLoader } from "../libs/PLYLoader";
 import * as THREE from "three.js";
 import shaderHeader from "../../asset/shader/header.glsl!text";
 import animation_scene_json from "../../asset/animation/scene.json!text";
-import mesh_cookie_ply from "../../asset/mesh/cookie.ply!text";
-import shader_bloom_bloom_frag from "../../asset/shader/bloom/bloom.frag!text";
-import shader_bloom_bloom_vert from "../../asset/shader/bloom/bloom.vert!text";
-import shader_bloom_bright_frag from "../../asset/shader/bloom/bright.frag!text";
-import shader_bloom_bright_vert from "../../asset/shader/bloom/bright.vert!text";
-import shader_bloom_gaussian_blur_frag from "../../asset/shader/bloom/gaussian_blur.frag!text";
-import shader_bloom_gaussian_blur_vert from "../../asset/shader/bloom/gaussian_blur.vert!text";
-import shader_chocolat_frag from "../../asset/shader/chocolat.frag!text";
-import shader_chocolat_vert from "../../asset/shader/chocolat.vert!text";
-import shader_desert_frag from "../../asset/shader/desert.frag!text";
-import shader_desert_vert from "../../asset/shader/desert.vert!text";
-import shader_fullscreen_vert from "../../asset/shader/fullscreen.vert!text";
-import shader_render_frag from "../../asset/shader/render.frag!text";
-import shader_shape2D_frag from "../../asset/shader/shape2D.frag!text";
-import shader_shape2D_vert from "../../asset/shader/shape2D.vert!text";
-import shader_star_frag from "../../asset/shader/star.frag!text";
-import shader_star_vert from "../../asset/shader/star.vert!text";
-import shader_wireframe_frag from "../../asset/shader/wireframe.frag!text";
-import shader_wireframe_vert from "../../asset/shader/wireframe.vert!text";
+import mesh_geo_ply from "../../asset/mesh/geo.ply!text";
+import shader_color_frag from "../../asset/shader/color.frag!text";
+import shader_filter_bloom_bloom_frag from "../../asset/shader/filter/bloom/bloom.frag!text";
+import shader_filter_bloom_bloom_vert from "../../asset/shader/filter/bloom/bloom.vert!text";
+import shader_filter_bloom_bright_frag from "../../asset/shader/filter/bloom/bright.frag!text";
+import shader_filter_bloom_bright_vert from "../../asset/shader/filter/bloom/bright.vert!text";
+import shader_filter_bloom_gaussian_blur_frag from "../../asset/shader/filter/bloom/gaussian_blur.frag!text";
+import shader_filter_bloom_gaussian_blur_vert from "../../asset/shader/filter/bloom/gaussian_blur.vert!text";
+import shader_filter_edge_frag from "../../asset/shader/filter/edge.frag!text";
+import shader_filter_fullscreen_vert from "../../asset/shader/filter/fullscreen.vert!text";
+import shader_filter_render_frag from "../../asset/shader/filter/render.frag!text";
+import shader_line_curves_frag from "../../asset/shader/line/curves.frag!text";
+import shader_line_curves_vert from "../../asset/shader/line/curves.vert!text";
+import shader_line_eggcrack_vert from "../../asset/shader/line/eggcrack.vert!text";
+import shader_mesh_egg_frag from "../../asset/shader/mesh/egg.frag!text";
+import shader_mesh_egg_vert from "../../asset/shader/mesh/egg.vert!text";
+import shader_mesh_text_frag from "../../asset/shader/mesh/text.frag!text";
+import shader_mesh_text_vert from "../../asset/shader/mesh/text.vert!text";
+import shader_particle_dust_vert from "../../asset/shader/particle/dust.vert!text";
 const plyLoader = new PLYLoader();
 const objLoader = new OBJLoader();
 const fontLoader = new THREE.FontLoader();
 export default {
 animations: makeAnimations(JSON.parse(animation_scene_json)),
 geometries: {
-cookie: plyLoader.parse(mesh_cookie_ply),
+geo: plyLoader.parse(mesh_geo_ply),
 },
 fonts: {
 },
 shaders: {
-wireframe: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.wireframe, {
-vertexShader: shaderHeader + shader_wireframe_vert,
-fragmentShader: shaderHeader + shader_wireframe_frag,
+dust: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.dust, {
+vertexShader: shaderHeader + shader_particle_dust_vert,
+fragmentShader: shaderHeader + shader_color_frag,
 })),
-desert: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.desert, {
-vertexShader: shaderHeader + shader_desert_vert,
-fragmentShader: shaderHeader + shader_desert_frag,
+egg: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.egg, {
+vertexShader: shaderHeader + shader_mesh_egg_vert,
+fragmentShader: shaderHeader + shader_mesh_egg_frag,
 })),
-star: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.star, {
-vertexShader: shaderHeader + shader_star_vert,
-fragmentShader: shaderHeader + shader_star_frag,
+eggcrack: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.eggcrack, {
+vertexShader: shaderHeader + shader_line_eggcrack_vert,
+fragmentShader: shaderHeader + shader_color_frag,
 })),
-chocolat: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.chocolat, {
-vertexShader: shaderHeader + shader_chocolat_vert,
-fragmentShader: shaderHeader + shader_chocolat_frag,
+curves: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.curves, {
+vertexShader: shaderHeader + shader_line_curves_vert,
+fragmentShader: shaderHeader + shader_line_curves_frag,
 })),
-shape2D: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.shape2D, {
-vertexShader: shaderHeader + shader_shape2D_vert,
-fragmentShader: shaderHeader + shader_shape2D_frag,
-})),
-bloom: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.bloom, {
-vertexShader: shaderHeader + shader_bloom_bloom_vert,
-fragmentShader: shaderHeader + shader_bloom_bloom_frag,
+text: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.text, {
+vertexShader: shaderHeader + shader_mesh_text_vert,
+fragmentShader: shaderHeader + shader_mesh_text_frag,
 })),
 bright: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.bright, {
-vertexShader: shaderHeader + shader_bloom_bright_vert,
-fragmentShader: shaderHeader + shader_bloom_bright_frag,
+vertexShader: shaderHeader + shader_filter_bloom_bright_vert,
+fragmentShader: shaderHeader + shader_filter_bloom_bright_frag,
 })),
 gaussian_blur: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.gaussian_blur, {
-vertexShader: shaderHeader + shader_bloom_gaussian_blur_vert,
-fragmentShader: shaderHeader + shader_bloom_gaussian_blur_frag,
+vertexShader: shaderHeader + shader_filter_bloom_gaussian_blur_vert,
+fragmentShader: shaderHeader + shader_filter_bloom_gaussian_blur_frag,
+})),
+bloom: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.bloom, {
+vertexShader: shaderHeader + shader_filter_bloom_bloom_vert,
+fragmentShader: shaderHeader + shader_filter_bloom_bloom_frag,
 })),
 render: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.render, {
-vertexShader: shaderHeader + shader_fullscreen_vert,
-fragmentShader: shaderHeader + shader_render_frag,
+vertexShader: shaderHeader + shader_filter_fullscreen_vert,
+fragmentShader: shaderHeader + shader_filter_render_frag,
+})),
+edge: new THREE.ShaderMaterial(Object.assign({}, descriptors.shaders.edge, {
+vertexShader: shaderHeader + shader_filter_fullscreen_vert,
+fragmentShader: shaderHeader + shader_filter_edge_frag,
 })),
 },
 load: function(callback) { return callback(); }
