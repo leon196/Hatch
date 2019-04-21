@@ -100,6 +100,7 @@ export function initEngine () {
 		height: 1024,
 		shadowColor: 'rgba(0,0,0,.5)',
 		shadowBlur: 4,
+		offsetY: 20,
 	}]) };
 	uniforms.jobsTexture = { value: makeText.createTexture([{
 		text: 'VISUAL\nMUSIC\nTOOL',
@@ -112,6 +113,7 @@ export function initEngine () {
 		height: 1024,
 		shadowColor: 'rgba(0,0,0,.5)',
 		shadowBlur: 4,
+		offsetY: 20,
 	}]) };
 	uniforms.cookieTexture = { value: makeText.createTexture([{
 		text: 'Cookie',

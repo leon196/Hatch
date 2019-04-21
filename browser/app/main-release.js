@@ -10,6 +10,7 @@ function start(event) {
 		started = true;
 
 		document.getElementById('overlay').remove();
+		document.body.style.cursor = 'none';
 
 		setTimeout(demo, 0);
 	}

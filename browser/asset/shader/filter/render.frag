@@ -36,9 +36,6 @@ void main () {
 
 	vec4 cookie = texture2D(cookieTexture, uvtext);
 
-	title = mix(title, creds, Credits.y);
-	title = mix(title, cookie, Cookie.y);
-
 	color = blu + edgy;
 
 	color = mix(color, 1.-color, smoothstep(Circle.y+.01,Circle.y, length(p)));
@@ -46,6 +43,8 @@ void main () {
 	color = mix(color, 1.-color, smoothstep(Circle3.y+.01,Circle3.y, length(p)));
 
 	color = mix(color, 1.-color, title.r * TextingScreen.y);
+	color = mix(color, 1.-color, creds.r * Credits.y);
+	color = mix(color, 1.-color, cookie.r * Cookie.y);
 
 	color *= Rideau.y;
 
