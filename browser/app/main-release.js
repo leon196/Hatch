@@ -16,4 +16,4 @@ function start(event) {
 	}
 }
 
-addEventListener('click', start);
+document.getElementById('play').addEventListener('click', start);

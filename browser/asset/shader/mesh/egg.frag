@@ -8,5 +8,5 @@ void main () {
 	// color = floor(color*lod)/lod;
 	color = vec3(luminance(color));
 	
-	gl_FragColor = vec4(color,1);
+	gl_FragColor = clamp(vec4(color,1), 0., 1.);
 }

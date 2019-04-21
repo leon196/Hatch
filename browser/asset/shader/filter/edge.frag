@@ -7,5 +7,5 @@ varying vec2 vUv;
 
 void main () {
 	vec4 color = edgeSD(frametarget, vUv, resolution);
-	gl_FragColor = color;
+	gl_FragColor = clamp(color, 0., 1.);
 }
