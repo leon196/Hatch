@@ -5,6 +5,16 @@ uniform vec3 Scratch, Texting, Bloom, ExtraBloom, Circle, Circle2, Circle3, Text
 uniform float time;
 varying vec2 vUv;
 
+float fbm (vec3 p) {
+  float amplitude = .5;
+  float result = 0.0;
+  for (float index = 0.0; index <= 5.0; ++index) {
+    result += noise(p / amplitude) * amplitude;
+    amplitude /= 2.;
+  }
+  return result;
+}
+
 void main () {
 
 	vec2 uv = vUv;
